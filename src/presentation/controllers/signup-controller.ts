@@ -1,17 +1,29 @@
 import { HttpResponse, Controller, Validation } from '@/presentation/protocols';
-import { ok, badRequest } from '@/presentation/helpers';
+import { ok, badRequest, serverError } from '@/presentation/helpers';
+import { AddAccount } from '@/domain/usecases';
 
 export class SignUpController implements Controller {
-  constructor(private readonly validation: Validation) {}
+  constructor(
+    private readonly validation: Validation,
+    private readonly addAccount: AddAccount,
+  ) {}
 
-  async handle(account: SignUpController.Request): Promise<HttpResponse> {
-    const error = this.validation.validate(account);
-
-    if (error) {
-      return badRequest(error);
+  async handle(request: SignUpController.Request): Promise<HttpResponse> {
+    try {
+      const error = this.validation.validate(request);
+      if (error) {
+        return badRequest(error);
+      }
+      const { username, email, password } = request;
+      const isValid = this.addAccount.add({
+        username,
+        email,
+        password,
+      });
+      return ok(isValid);
+    } catch (err) {
+      return serverError(err);
     }
-
-    return ok(account);
   }
 }
 
