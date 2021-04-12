@@ -1,6 +1,7 @@
 import { HttpResponse, Controller, Validation } from '@/presentation/protocols';
 import { AddAccount } from '@/domain/usecases';
-import { ok, badRequest, serverError } from '@/presentation/helpers';
+import { ok, badRequest, serverError, forbidden } from '@/presentation/helpers';
+import { EmailInUseError } from '@/presentation/errors';
 
 export class SignUpController implements Controller {
   constructor(
@@ -15,11 +16,14 @@ export class SignUpController implements Controller {
         return badRequest(error);
       }
       const { username, email, password } = request;
-      const account = this.addAccount.add({
+      const account = await this.addAccount.add({
         username,
         email,
         password,
       });
+      if (!account) {
+        return forbidden(new EmailInUseError());
+      }
       return ok(account);
     } catch (err) {
       return serverError(err);
