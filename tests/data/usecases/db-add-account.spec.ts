@@ -1,18 +1,33 @@
 import { DbAddAccount } from '@/data/usecases';
-import { HasherSpy, AddAccountRepositorySpy } from '@/tests/data/mocks';
+import {
+  HasherSpy,
+  AddAccountRepositorySpy,
+  CheckAccountByEmailRepositorySpy,
+} from '@/tests/data/mocks';
 import { throwError, mockAddAccountParams } from '@/tests/domain/mocks';
 
 type SutTypes = {
   sut: DbAddAccount;
   hasherSpy: HasherSpy;
   addAccountRepositorySpy: AddAccountRepositorySpy;
+  checkAccountByEmailRepositorySpy: CheckAccountByEmailRepositorySpy;
 };
 
 const makeSut = (): SutTypes => {
   const hasherSpy = new HasherSpy();
   const addAccountRepositorySpy = new AddAccountRepositorySpy();
-  const sut = new DbAddAccount(hasherSpy, addAccountRepositorySpy);
-  return { sut, hasherSpy, addAccountRepositorySpy };
+  const checkAccountByEmailRepositorySpy = new CheckAccountByEmailRepositorySpy();
+  const sut = new DbAddAccount(
+    hasherSpy,
+    addAccountRepositorySpy,
+    checkAccountByEmailRepositorySpy,
+  );
+  return {
+    sut,
+    hasherSpy,
+    addAccountRepositorySpy,
+    checkAccountByEmailRepositorySpy,
+  };
 };
 
 describe('DbAddAccount Usecase', () => {
@@ -57,5 +72,21 @@ describe('DbAddAccount Usecase', () => {
       .mockImplementationOnce(throwError);
     const promise = sut.add(addAccountParams);
     await expect(promise).rejects.toThrow();
+  });
+
+  it('Should return false if AddAccountRepository returns false', async () => {
+    const { sut, addAccountRepositorySpy } = makeSut();
+    const addAccountParams = mockAddAccountParams();
+    addAccountRepositorySpy.result = false;
+    const response = await sut.add(addAccountParams);
+    expect(response).toBe(false);
+  });
+
+  it('Should return false if CheckAccountByEmailRepository returns true', async () => {
+    const { sut, checkAccountByEmailRepositorySpy } = makeSut();
+    const addAccountParams = mockAddAccountParams();
+    checkAccountByEmailRepositorySpy.result = true;
+    const response = await sut.add(addAccountParams);
+    expect(response).toBe(false);
   });
 });
