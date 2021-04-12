@@ -1,6 +1,6 @@
 import { HttpResponse, Controller, Validation } from '@/presentation/protocols';
-import { ok, badRequest, serverError } from '@/presentation/helpers';
 import { AddAccount } from '@/domain/usecases';
+import { ok, badRequest, serverError } from '@/presentation/helpers';
 
 export class SignUpController implements Controller {
   constructor(
@@ -15,12 +15,12 @@ export class SignUpController implements Controller {
         return badRequest(error);
       }
       const { username, email, password } = request;
-      const isValid = this.addAccount.add({
+      const account = this.addAccount.add({
         username,
         email,
         password,
       });
-      return ok(isValid);
+      return ok(account);
     } catch (err) {
       return serverError(err);
     }
