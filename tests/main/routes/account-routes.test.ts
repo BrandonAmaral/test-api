@@ -21,12 +21,12 @@ describe('Account Routes', () => {
   });
 
   describe('POST /signup', () => {
-    it('Should return status code 200 on signup', async () => {
+    it('Should return 200 on signup', async () => {
       await request(app)
         .post('/api/signup')
         .send({
-          email: 'any_email',
           username: 'any_username',
+          email: 'any_email@mail.com',
           password: 'any_password',
           passwordConfirmation: 'any_password',
         })
@@ -36,7 +36,7 @@ describe('Account Routes', () => {
         .post('/api/signup')
         .send({
           username: 'any_username',
-          email: 'any_email',
+          email: 'any_email@mail.com',
           password: 'any_password',
           passwordConfirmation: 'any_password',
         })
