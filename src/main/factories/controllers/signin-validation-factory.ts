@@ -3,23 +3,14 @@ import { Validation } from '@/presentation/protocols';
 import {
   ValidationComposite,
   RequiredFieldValidation,
-  CompareFieldsValidation,
 } from '@/validation/validators';
 import { EmailValidation } from '@/validation/validators/email-validation';
 
-export const makeSignUpValidation = (): ValidationComposite => {
+export const makeSignInValidation = (): ValidationComposite => {
   const validations: Validation[] = [];
-  for (const field of [
-    'username',
-    'email',
-    'password',
-    'passwordConfirmation',
-  ]) {
+  for (const field of ['email', 'password']) {
     validations.push(new RequiredFieldValidation(field));
   }
-  validations.push(
-    new CompareFieldsValidation('password', 'passwordConfirmation'),
-  );
   validations.push(new EmailValidation('email', new EmailValidatorAdapter()));
   return new ValidationComposite(validations);
 };

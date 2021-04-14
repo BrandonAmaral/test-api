@@ -1,8 +1,9 @@
-import request from 'supertest';
-import { Collection } from 'mongodb';
-
 import app from '@/main/config/app';
 import { MongoHelper } from '@/infra/db';
+
+import request from 'supertest';
+import { Collection } from 'mongodb';
+import { hash } from 'bcrypt';
 
 let accountCollection: Collection;
 
@@ -41,6 +42,34 @@ describe('Account Routes', () => {
           passwordConfirmation: 'any_password',
         })
         .expect(403);
+    });
+  });
+
+  describe('POST /signin', () => {
+    it('Should return 200 on signin', async () => {
+      const password = await hash('any_password', 12);
+      await accountCollection.insertOne({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password,
+      });
+      await request(app)
+        .post('/api/signin')
+        .send({
+          email: 'any_email@mail.com',
+          password: 'any_password',
+        })
+        .expect(200);
+    });
+
+    it('Should return 401 on signin', async () => {
+      await request(app)
+        .post('/api/signin')
+        .send({
+          email: 'any_email@mail.com',
+          password: 'any_password',
+        })
+        .expect(401);
     });
   });
 });
