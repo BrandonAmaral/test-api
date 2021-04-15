@@ -2,20 +2,16 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "allowJs": true,
     "outDir": "dist",
     "rootDirs": ["src", "tests"],
-    "strict": true,
-    "moduleResolution": "node",
     "sourceMap": true,
+    "moduleResolution": "node",
     "baseUrl": "src",
+    "esModuleInterop": true,
     "paths": {
       "@/tests/*": ["../tests/*"],
       "@/*": ["*"]
-    },
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    }
   },
   "include": ["src", "tests"],
   "exclude": []
